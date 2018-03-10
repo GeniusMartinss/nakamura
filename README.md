@@ -10,7 +10,7 @@ go get -u github.com/geniusmartinss/nakamura
 import "github.com/geniusmartinss/nakamura"
 
 nakamura.NewDate("2018-02-12", "YYYY-MM-DD") //{2018-02-12}
-nakamura.NewDate("") //Returns the date for the current day
+nakamura.NewDate("", "YYYY-MM-DD") //Returns the date for the current day
 
 testDate := nakamura.NewDate("2018-02-12", "YYYY-MM-DD")
 testDate.IsDateVaid() //true
