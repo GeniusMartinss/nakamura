@@ -80,7 +80,7 @@ func dateMatchesFormat(input, format []string) bool {
 func isDayValidInMonth(year, month, day int) bool {
 	validityCheck := Months{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}
 	validityCount := Months{}
-	if isLeap(year) {
+	if isLeapYear(year) {
 		validityCount = Months{31, 29, 31, 30, 31, 30, 31, 30, 31, 31, 30, 31}
 	} else {
 		validityCount = Months{31, 28, 31, 30, 31, 30, 31, 30, 31, 31, 30, 31}
@@ -181,11 +181,13 @@ func IsWeekend(input, format string) bool {
 func IsLeapYear(input, format string) bool {
 	date, dateFormat := getDateType(input, format)
 	year, _, _ := returnYearMonthDay(date, dateFormat)
+	return isLeapYear(year)
+}
+
+func isLeapYear(year int) bool {
 	return ((year%4 == 0) && (year%100 != 0)) || (year%400 == 0)
 }
-func isLeap(year int) bool {
-	return ((year%4 == 0) && (year%100 != 0)) || (year%400 == 0)
-}
+
 func GreaterThan(firstDate, secondDate Nakamura, format string) bool {
 	date1, dateFormat1 := getDateType(firstDate.date, format)
 	year1, month1, day1 := returnYearMonthDay(date1, dateFormat1)
