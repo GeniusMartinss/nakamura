@@ -15,7 +15,7 @@ func TestNakamura_IsDateValid(t *testing.T) {
 	for _, c := range cases {
 		got := c.input.IsDateValid()
 		if got != c.want {
-			t.Errorf("IsDateValid(%q) == %q, want %q", c.input.date, got, c.want)
+			t.Errorf("IsDateValid(%q) == %t, want %t", c.input.date, got, c.want)
 		}
 	}
 }
@@ -31,7 +31,7 @@ func TestNakamura_IsLeapYear(t *testing.T) {
 	for _, c := range cases {
 		got := c.input.IsLeapYear()
 		if got != c.want {
-			t.Errorf("IsLeapYear(%q) == %q, want %q", c.input.date, got, c.want)
+			t.Errorf("IsLeapYear(%q) == %t, want %t", c.input.date, got, c.want)
 		}
 	}
 }
@@ -47,7 +47,7 @@ func TestNakamura_IsWeekEnd(t *testing.T) {
 	for _, c := range cases {
 		got := c.input.IsWeekEnd()
 		if got != c.want {
-			t.Errorf("IsWeekEnd(%q) == %q, want %q", c.input.date, got, c.want)
+			t.Errorf("IsWeekEnd(%q) == %t, want %t", c.input.date, got, c.want)
 		}
 	}
 }
@@ -63,7 +63,7 @@ func TestGreaterThan(t *testing.T) {
 	for _, c := range cases {
 		got := c.firstDate.GreaterThan(c.SecondDate)
 		if got != c.want {
-			t.Errorf("GreaterThan(%q) == %q, want %q", c.firstDate.date, got, c.want)
+			t.Errorf("GreaterThan(%q) == %t, want %t", c.firstDate.date, got, c.want)
 		}
 	}
 }
@@ -79,7 +79,7 @@ func TestNakamura_LessThan(t *testing.T) {
 	for _, c := range cases {
 		got := c.firstDate.LessThan(c.SecondDate)
 		if got != c.want {
-			t.Errorf("LessThan(%q) == %q, want %q", c.firstDate.date, got, c.want)
+			t.Errorf("LessThan(%q) == %t, want %t", c.firstDate.date, got, c.want)
 		}
 	}
 }
@@ -95,7 +95,7 @@ func TestEqual(t *testing.T) {
 	for _, c := range cases {
 		got := c.firstDate.Equal(c.SecondDate)
 		if got != c.want {
-			t.Errorf("Equal(%q) == %q, want %q", c.firstDate.date, got, c.want)
+			t.Errorf("Equal(%q) == %t, want %t", c.firstDate.date, got, c.want)
 		}
 	}
 }
