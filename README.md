@@ -1,6 +1,9 @@
 # Nakamura
 A lightweight golang date library for parsing, validating, manipulating, and formatting dates
 supporting both slash style and hyphen style dates
+
+https://travis-ci.org/GeniusMartinss/nakamura.svg?branch=master
+
 ## Install
 ```
 go get -u github.com/geniusmartinss/nakamura
