@@ -2,7 +2,7 @@
 A lightweight golang date library for parsing, validating, manipulating, and formatting dates
 supporting both slash style and hyphen style dates
 
-https://travis-ci.org/GeniusMartinss/nakamura.svg?branch=master
+[![Build Status](https://travis-ci.org/GeniusMartinss/nakamura.svg?branch=master)](https://travis-ci.org/GeniusMartinss/nakamura)
 
 ## Install
 ```
