@@ -9,7 +9,7 @@ go get -u github.com/geniusmartinss/nakamura
 ```
 import "github.com/geniusmartinss/nakamura"
 
-nakamura.NewDate("2018-02-12", "YYYY-MM-DD") //{2018-02-12}
+nakamura.NewDate("2018-02-12", "YYYY-MM-DD") //{2018-02-12, "YYYY-MM-DD"}
 nakamura.NewDate("", "YYYY-MM-DD") //Returns the date for the current day
 
 testDate := nakamura.NewDate("2018-02-12", "YYYY-MM-DD")
@@ -34,9 +34,9 @@ firstDate.GreaterThan(firstDate) //true
 firstDate.LessThan(secondDate) //false
 
 testDate := NewDate("2012-11-09")
-testDate.Add(3,"YYYY") //2015-11-09
-testDate.Add(3,"DD") //2012-11-12
-testDate.Subtract(3,"MM") //2012-08-09
+testDate.Add(3,"YYYY") //{"2015-11-09", "YYYY-MM-DD"}
+testDate.Add(3,"DD") //{"2012-11-12", "YYYY-MM-DD"}
+testDate.Subtract(3,"MM") //{"2012-08-09", "YYYY-MM-DD"}
 ```
 
 ## Contributing
