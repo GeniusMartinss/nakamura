@@ -65,3 +65,11 @@ func (date Nakamura) Month() string {
 func (date Nakamura) MonthDays() (int, error) {
 	return DaysInMonth(date.date, date.format)
 }
+
+func Max(dates ...Nakamura) Nakamura {
+	return GetMax(dates...)
+}
+
+func Min(dates ...Nakamura) Nakamura {
+	return GetMin(dates...)
+}

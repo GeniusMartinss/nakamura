@@ -198,7 +198,7 @@ func GreaterThan(firstDate, secondDate Nakamura, format string) bool {
 }
 
 func LessThan(firstDate, secondDate Nakamura, format string) bool {
-	return !GreaterThan(firstDate, secondDate, format)
+	return !GreaterThan(firstDate, secondDate, format) && !Equal(firstDate, secondDate, format)
 }
 
 func Add(input Nakamura, value int, format string) Nakamura {
@@ -263,4 +263,36 @@ func getDaysInMonth(year, month int) (int, error) {
 	}
 
 	return 0, errors.New("Invalid month")
+}
+
+// Max returns the latest of the dates passed as arguments
+func GetMax(dates ...Nakamura) Nakamura {
+	if len(dates) > 0 {
+		maxDate := dates[0]
+		for i := 1; i < len(dates); i++ {
+			if GreaterThan(dates[i], maxDate, maxDate.format) {
+				maxDate = dates[i]
+			}
+		}
+
+		return maxDate
+	}
+
+	return Nakamura{Today(), "YYYY-MM-DD"}
+}
+
+// Min returns the earliest of the dates passed as arguments
+func GetMin(dates ...Nakamura) Nakamura {
+	if len(dates) > 0 {
+		minDate := dates[0]
+		for i := 1; i < len(dates); i++ {
+			if LessThan(dates[i], minDate, minDate.format) {
+				minDate = dates[i]
+			}
+		}
+
+		return minDate
+	}
+
+	return Nakamura{Today(), "YYYY-MM-DD"}
 }

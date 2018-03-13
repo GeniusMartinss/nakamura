@@ -58,6 +58,7 @@ func TestGreaterThan(t *testing.T) {
 		want                  bool
 	}{
 		{Nakamura{"2018-03-09", "YYYY-MM-DD"}, Nakamura{"2018-03-10", "YYYY-MM-DD"}, false},
+		{Nakamura{"2018-03-10", "YYYY-MM-DD"}, Nakamura{"2018-03-10", "YYYY-MM-DD"}, false},
 		{Nakamura{"2018-03-10", "YYYY-MM-DD"}, Nakamura{"2018-03-09", "YYYY-MM-DD"}, true},
 	}
 	for _, c := range cases {
@@ -257,4 +258,48 @@ func TestDaysInMonth(t *testing.T) {
 		}
 	}
 
+}
+
+func TestMax(t *testing.T) {
+	cases := []struct {
+		args []Nakamura
+		want Nakamura
+	}{
+		{
+			[]Nakamura{
+				Nakamura{"2018-03-09", "YYYY-MM-DD"},
+				Nakamura{"2018-03-10", "YYYY-MM-DD"},
+				Nakamura{"2018-03-11", "YYYY-MM-DD"},
+			},
+			Nakamura{"2018-03-11", "YYYY-MM-DD"},
+		},
+	}
+	for _, c := range cases {
+		got := Max((c.args)...)
+		if got != c.want {
+			t.Errorf("Max(%v) == %v, want %v", c.args, got, c.want)
+		}
+	}
+}
+
+func TestMin(t *testing.T) {
+	cases := []struct {
+		args []Nakamura
+		want Nakamura
+	}{
+		{
+			[]Nakamura{
+				Nakamura{"2018-03-09", "YYYY-MM-DD"},
+				Nakamura{"2018-03-10", "YYYY-MM-DD"},
+				Nakamura{"2018-03-11", "YYYY-MM-DD"},
+			},
+			Nakamura{"2018-03-09", "YYYY-MM-DD"},
+		},
+	}
+	for _, c := range cases {
+		got := Min((c.args)...)
+		if got != c.want {
+			t.Errorf("Min(%v) == %v, want %v", c.args, got, c.want)
+		}
+	}
 }
