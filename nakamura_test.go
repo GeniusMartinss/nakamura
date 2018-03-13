@@ -216,3 +216,45 @@ func TestHumanise(t *testing.T) {
 		}
 	}
 }
+
+func TestDaysInMonth(t *testing.T) {
+	cases := []struct {
+		input Nakamura
+		want  int
+	}{
+		{Nakamura{"2018-01-10", "YYYY-MM-DD"}, 31},
+		{Nakamura{"2018-02-10", "YYYY-MM-DD"}, 28},
+		{Nakamura{"2018-03-10", "YYYY-MM-DD"}, 31},
+		{Nakamura{"2018-04-10", "YYYY-MM-DD"}, 30},
+		{Nakamura{"2018-05-10", "YYYY-MM-DD"}, 31},
+		{Nakamura{"2018-06-10", "YYYY-MM-DD"}, 30},
+		{Nakamura{"2018-07-10", "YYYY-MM-DD"}, 31},
+		{Nakamura{"2018-08-10", "YYYY-MM-DD"}, 31},
+		{Nakamura{"2018-09-10", "YYYY-MM-DD"}, 30},
+		{Nakamura{"2018-10-10", "YYYY-MM-DD"}, 31},
+		{Nakamura{"2018-11-10", "YYYY-MM-DD"}, 30},
+		{Nakamura{"2018-12-10", "YYYY-MM-DD"}, 31},
+	}
+
+	errorCases := []struct {
+		input Nakamura
+	}{
+		{Nakamura{"2018-13-10", "YYYY-MM-DD"}},
+	}
+
+	for _, c := range cases {
+		got, _ := c.input.MonthDays()
+		if got != c.want {
+			t.Errorf("MonthDays(%q) == %q, want %q", c.input.date, got, c.want)
+		}
+	}
+
+	for _, c := range errorCases {
+		_, got := c.input.MonthDays()
+		_, ok := got.(error)
+		if !ok {
+			t.Errorf("MonthDays(%q) == %q, want instance of error", c.input.date, got)
+		}
+	}
+
+}

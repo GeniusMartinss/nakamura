@@ -1,6 +1,7 @@
 package nakamura
 
 import (
+	"errors"
 	"reflect"
 	"strconv"
 	"strings"
@@ -233,4 +234,33 @@ func Month(input, format string) string {
 	date, dateFormat := getDateType(input, format)
 	_, month, _ := returnYearMonthDay(date, dateFormat)
 	return getMonth(month)
+}
+
+// DaysInMonth returns the number of days in a month
+// For example, for January 2017: daysInMonth(2017, 1) ==> 31
+func DaysInMonth(input, format string) (int, error) {
+	date, dateFormat := getDateType(input, format)
+	year, month, _ := returnYearMonthDay(date, dateFormat)
+
+	return getDaysInMonth(year, month)
+}
+
+func getDaysInMonth(year, month int) (int, error) {
+	if month > 0 && month <= 12 {
+		if month == 2 {
+			if isLeapYear(year) {
+				return 29, nil
+			}
+			return 28, nil
+		}
+
+		// Force-use a zero index to accommodate
+		month = month - 1
+
+		// Months 1 - 7 (Odd -> 31 | Even -> 30)
+		// Months 8 - 12 (Odd -> 30 | Even -> 31)
+		return 31 - (month % 7 % 2), nil
+	}
+
+	return 0, errors.New("Invalid month")
 }
