@@ -4,7 +4,7 @@ supporting both slash style and hyphen style dates
 go get -u github.com/geniusmartinss/nakamura
 nakamura.NewDate("2018-02-12", "YYYY-MM-DD") //{2018-02-12, "YYYY-MM-DD"}
 nakamura.NewDate("", "YYYY-MM-DD") //Returns the date for the current day
- */
+*/
 
 package nakamura
 
@@ -61,17 +61,17 @@ func (firstDate Nakamura) LessThan(secondDate Nakamura) bool {
 }
 
 // Check if firstDate is between secondDate and thirdDate
-func (firstDate Nakamura)Between(secondDate, thirdDate Nakamura)  bool{
+func (firstDate Nakamura) Between(secondDate, thirdDate Nakamura) bool {
 	return firstDate.GreaterThan(secondDate) && firstDate.LessThan(thirdDate) || firstDate.Equal(secondDate) || firstDate.Equal(thirdDate)
 }
 
 // Check if a nakamura object is in the future
-func (date Nakamura)IsFuture()  bool{
+func (date Nakamura) IsFuture() bool {
 	return date.GreaterThan(NewDate("", date.format))
 }
 
 // Check if a nakamura object is in the past
-func (date Nakamura)IsPast()  bool{
+func (date Nakamura) IsPast() bool {
 	return date.LessThan(NewDate("", date.format))
 }
 
