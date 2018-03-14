@@ -61,3 +61,15 @@ func (date Nakamura) Weekday() string {
 func (date Nakamura) Month() string {
 	return Month(date.date, date.format)
 }
+
+func (date Nakamura) MonthDays() (int, error) {
+	return DaysInMonth(date.date, date.format)
+}
+
+func Max(dates ...Nakamura) Nakamura {
+	return GetMax(dates...)
+}
+
+func Min(dates ...Nakamura) Nakamura {
+	return GetMin(dates...)
+}
