@@ -1,6 +1,7 @@
 package nakamura
 
 import (
+	"errors"
 	"reflect"
 	"strconv"
 	"strings"
@@ -79,7 +80,7 @@ func dateMatchesFormat(input, format []string) bool {
 func isDayValidInMonth(year, month, day int) bool {
 	validityCheck := Months{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}
 	validityCount := Months{}
-	if isLeap(year) {
+	if isLeapYear(year) {
 		validityCount = Months{31, 29, 31, 30, 31, 30, 31, 30, 31, 31, 30, 31}
 	} else {
 		validityCount = Months{31, 28, 31, 30, 31, 30, 31, 30, 31, 31, 30, 31}
@@ -180,11 +181,13 @@ func IsWeekend(input, format string) bool {
 func IsLeapYear(input, format string) bool {
 	date, dateFormat := getDateType(input, format)
 	year, _, _ := returnYearMonthDay(date, dateFormat)
+	return isLeapYear(year)
+}
+
+func isLeapYear(year int) bool {
 	return ((year%4 == 0) && (year%100 != 0)) || (year%400 == 0)
 }
-func isLeap(year int) bool {
-	return ((year%4 == 0) && (year%100 != 0)) || (year%400 == 0)
-}
+
 func GreaterThan(firstDate, secondDate Nakamura, format string) bool {
 	date1, dateFormat1 := getDateType(firstDate.date, format)
 	year1, month1, day1 := returnYearMonthDay(date1, dateFormat1)
@@ -194,7 +197,7 @@ func GreaterThan(firstDate, secondDate Nakamura, format string) bool {
 }
 
 func LessThan(firstDate, secondDate Nakamura, format string) bool {
-	return !GreaterThan(firstDate, secondDate, format)
+	return !GreaterThan(firstDate, secondDate, format) && !Equal(firstDate, secondDate, format)
 }
 
 func Add(input Nakamura, value int, format string) Nakamura {
@@ -230,4 +233,65 @@ func Month(input, format string) string {
 	date, dateFormat := getDateType(input, format)
 	_, month, _ := returnYearMonthDay(date, dateFormat)
 	return getMonth(month)
+}
+
+// DaysInMonth returns the number of days in a month
+// For example, for January 2017: daysInMonth(2017, 1) ==> 31
+func DaysInMonth(input, format string) (int, error) {
+	date, dateFormat := getDateType(input, format)
+	year, month, _ := returnYearMonthDay(date, dateFormat)
+
+	return getDaysInMonth(year, month)
+}
+
+func getDaysInMonth(year, month int) (int, error) {
+	if month > 0 && month <= 12 {
+		if month == 2 {
+			if isLeapYear(year) {
+				return 29, nil
+			}
+			return 28, nil
+		}
+
+		// Force-use a zero index to accommodate
+		month = month - 1
+
+		// Months 1 - 7 (Odd -> 31 | Even -> 30)
+		// Months 8 - 12 (Odd -> 30 | Even -> 31)
+		return 31 - (month % 7 % 2), nil
+	}
+
+	return 0, errors.New("Invalid month")
+}
+
+// Max returns the latest of the dates passed as arguments
+func GetMax(dates ...Nakamura) Nakamura {
+	if len(dates) > 0 {
+		maxDate := dates[0]
+		for i := 1; i < len(dates); i++ {
+			if GreaterThan(dates[i], maxDate, maxDate.format) {
+				maxDate = dates[i]
+			}
+		}
+
+		return maxDate
+	}
+
+	return Nakamura{Today(), "YYYY-MM-DD"}
+}
+
+// Min returns the earliest of the dates passed as arguments
+func GetMin(dates ...Nakamura) Nakamura {
+	if len(dates) > 0 {
+		minDate := dates[0]
+		for i := 1; i < len(dates); i++ {
+			if LessThan(dates[i], minDate, minDate.format) {
+				minDate = dates[i]
+			}
+		}
+
+		return minDate
+	}
+
+	return Nakamura{Today(), "YYYY-MM-DD"}
 }
