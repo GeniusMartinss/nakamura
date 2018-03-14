@@ -84,6 +84,23 @@ func TestNakamura_LessThan(t *testing.T) {
 	}
 }
 
+func TestNakamura_Between(t *testing.T) {
+	cases := []struct {
+		firstDate, secondDate, thirdDate Nakamura
+		want                  bool
+	}{
+		{Nakamura{"2018-03-09", "YYYY-MM-DD"}, Nakamura{"2018-03-08", "YYYY-MM-DD"},Nakamura{"2018-03-10", "YYYY-MM-DD"}, true},
+		{Nakamura{"2018-03-12", "YYYY-MM-DD"}, Nakamura{"2018-03-09", "YYYY-MM-DD"},Nakamura{"2018-03-10", "YYYY-MM-DD"}, false},
+		{Nakamura{"2018-03-09", "YYYY-MM-DD"}, Nakamura{"2018-03-09", "YYYY-MM-DD"},Nakamura{"2018-03-10", "YYYY-MM-DD"}, true},
+	}
+	for _, c := range cases {
+		got := c.firstDate.Between(c.secondDate, c.thirdDate)
+		if got != c.want {
+			t.Errorf("Between(%q) == %t, want %t", c.firstDate.date, got, c.want)
+		}
+	}
+}
+
 func TestEqual(t *testing.T) {
 	cases := []struct {
 		firstDate, SecondDate Nakamura
@@ -211,6 +228,40 @@ func TestHumanise(t *testing.T) {
 	}
 	for _, c := range cases {
 		got := c.input.Humanise()
+		if got != c.want {
+			t.Errorf("Humanise(%q) == %q, want %q", c.input.date, got, c.want)
+		}
+	}
+}
+
+func TestNakamura_IsFuture(t *testing.T) {
+	cases := []struct {
+		input Nakamura
+		want  bool
+	}{
+		{Nakamura{"1998-11-09", "YYYY-MM-DD"}, false},
+		//Jesus woulda been back by then :)
+		{Nakamura{"9000-12-10", "YYYY-MM-DD"}, true},
+	}
+	for _, c := range cases {
+		got := c.input.IsFuture()
+		if got != c.want {
+			t.Errorf("Humanise(%q) == %q, want %q", c.input.date, got, c.want)
+		}
+	}
+}
+
+func TestNakamura_IsPast(t *testing.T) {
+	cases := []struct {
+		input Nakamura
+		want  bool
+	}{
+		{Nakamura{"1998-11-09", "YYYY-MM-DD"}, true},
+		//Jesus woulda been back by then :)
+		{Nakamura{"9000-12-10", "YYYY-MM-DD"}, false},
+	}
+	for _, c := range cases {
+		got := c.input.IsPast()
 		if got != c.want {
 			t.Errorf("Humanise(%q) == %q, want %q", c.input.date, got, c.want)
 		}

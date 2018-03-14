@@ -33,9 +33,8 @@ func IsDateValid(input, format string) bool {
 		return false
 	}
 
-	//for each element in dateHyphen and dateSlash check if it's a valid integer
-	for i := 0; i < len(date); i++ {
-		if _, err := strconv.Atoi(date[i]); err == nil {
+	for _, chunk := range date {
+		if _, err := strconv.Atoi(chunk); err == nil {
 			dateIntegerCount++
 		}
 	}
