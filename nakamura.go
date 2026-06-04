@@ -10,6 +10,18 @@ package nakamura
 
 import "strings"
 
+// Unit represents the date component to add or subtract.
+type Unit int
+
+const (
+	// Year is the year component.
+	Year Unit = iota
+	// Month is the month component.
+	Month
+	// Day is the day component.
+	Day
+)
+
 type Nakamura struct {
 	date, format string
 }
@@ -97,7 +109,7 @@ func (date Nakamura) Weekday() string {
 
 // Month returns the Month of a given date
 func (date Nakamura) Month() string {
-	return Month(date.date, date.format)
+	return monthName(date.date, date.format)
 }
 
 func (date Nakamura) MonthDays() (int, error) {
