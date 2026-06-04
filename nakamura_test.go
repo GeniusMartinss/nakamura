@@ -120,39 +120,63 @@ func TestEqual(t *testing.T) {
 
 func TestNakamura_Add(t *testing.T) {
 	cases := []struct {
-		input  Nakamura
-		value  int
-		format string
-		want   Nakamura
+		input Nakamura
+		value int
+		unit  Unit
+		want  Nakamura
 	}{
-		{Nakamura{"2018-03-09", "YYYY-MM-DD"}, 2, "MM", Nakamura{"2018-05-09", "YYYY-MM-DD"}},
-		{Nakamura{"2018-03-10", "YYYY-MM-DD"}, 3, "DD", Nakamura{"2018-03-13", "YYYY-MM-DD"}},
-		{Nakamura{"2018-03-10", "YYYY-MM-DD"}, 5, "YYYY", Nakamura{"2023-03-10", "YYYY-MM-DD"}},
+		{Nakamura{"2018-03-09", "YYYY-MM-DD"}, 2, Month, Nakamura{"2018-05-09", "YYYY-MM-DD"}},
+		{Nakamura{"2018-03-10", "YYYY-MM-DD"}, 3, Day, Nakamura{"2018-03-13", "YYYY-MM-DD"}},
+		{Nakamura{"2018-03-10", "YYYY-MM-DD"}, 5, Year, Nakamura{"2023-03-10", "YYYY-MM-DD"}},
 	}
 	for _, c := range cases {
-		got := c.input.Add(c.value, c.format)
+		got, err := c.input.Add(c.value, c.unit)
+		if err != nil {
+			t.Errorf("Add(%q) returned unexpected error: %v", c.input.date, err)
+			continue
+		}
 		if got != c.want {
 			t.Errorf("Add(%q) == %q, want %q", c.input.date, got, c.want)
 		}
 	}
 }
 
+func TestNakamura_Add_UnknownUnit(t *testing.T) {
+	input := Nakamura{"2018-03-09", "YYYY-MM-DD"}
+	_, err := input.Add(1, Unit(99))
+	if err == nil {
+		t.Error("Add with unknown unit: expected error, got nil")
+	}
+}
+
 func TestNakamura_Subtract(t *testing.T) {
 	cases := []struct {
-		input  Nakamura
-		value  int
-		format string
-		want   Nakamura
+		input Nakamura
+		value int
+		unit  Unit
+		want  Nakamura
 	}{
-		{Nakamura{"2018-03-09", "YYYY-MM-DD"}, 2, "MM", Nakamura{"2018-01-09", "YYYY-MM-DD"}},
-		{Nakamura{"2018-03-10", "YYYY-MM-DD"}, 3, "DD", Nakamura{"2018-03-07", "YYYY-MM-DD"}},
-		{Nakamura{"2018-03-10", "YYYY-MM-DD"}, 5, "YYYY", Nakamura{"2013-03-10", "YYYY-MM-DD"}},
+		{Nakamura{"2018-03-09", "YYYY-MM-DD"}, 2, Month, Nakamura{"2018-01-09", "YYYY-MM-DD"}},
+		{Nakamura{"2018-03-10", "YYYY-MM-DD"}, 3, Day, Nakamura{"2018-03-07", "YYYY-MM-DD"}},
+		{Nakamura{"2018-03-10", "YYYY-MM-DD"}, 5, Year, Nakamura{"2013-03-10", "YYYY-MM-DD"}},
 	}
 	for _, c := range cases {
-		got := c.input.Subtract(c.value, c.format)
+		got, err := c.input.Subtract(c.value, c.unit)
+		if err != nil {
+			t.Errorf("Subtract(%q) returned unexpected error: %v", c.input.date, err)
+			continue
+		}
 		if got != c.want {
 			t.Errorf("Subtract(%q) == %q, want %q", c.input.date, got, c.want)
 		}
+	}
+}
+
+func TestNakamura_Subtract_UnknownUnit(t *testing.T) {
+	input := Nakamura{"2018-03-09", "YYYY-MM-DD"}
+	_, err := input.Subtract(1, Unit(99))
+	if err == nil {
+		t.Error("Subtract with unknown unit: expected error, got nil")
 	}
 }
 
@@ -318,9 +342,9 @@ func TestMax(t *testing.T) {
 	}{
 		{
 			[]Nakamura{
-				Nakamura{"2018-03-09", "YYYY-MM-DD"},
-				Nakamura{"2018-03-10", "YYYY-MM-DD"},
-				Nakamura{"2018-03-11", "YYYY-MM-DD"},
+				{"2018-03-09", "YYYY-MM-DD"},
+				{"2018-03-10", "YYYY-MM-DD"},
+				{"2018-03-11", "YYYY-MM-DD"},
 			},
 			Nakamura{"2018-03-11", "YYYY-MM-DD"},
 		},
@@ -340,9 +364,9 @@ func TestMin(t *testing.T) {
 	}{
 		{
 			[]Nakamura{
-				Nakamura{"2018-03-09", "YYYY-MM-DD"},
-				Nakamura{"2018-03-10", "YYYY-MM-DD"},
-				Nakamura{"2018-03-11", "YYYY-MM-DD"},
+				{"2018-03-09", "YYYY-MM-DD"},
+				{"2018-03-10", "YYYY-MM-DD"},
+				{"2018-03-11", "YYYY-MM-DD"},
 			},
 			Nakamura{"2018-03-09", "YYYY-MM-DD"},
 		},
