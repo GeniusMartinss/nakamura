@@ -8,20 +8,26 @@ nakamura.NewDate("", "YYYY-MM-DD") //Returns the date for the current day
 
 package nakamura
 
-import "strings"
+import (
+	"fmt"
+	"strings"
+)
 
 type Nakamura struct {
 	date, format string
 }
 
-// NewDate creates a new nakamura object to perform
-//various date formatting and manipulations n
-func NewDate(date, format string) Nakamura {
-
+// NewDate creates a new Nakamura from a date string and format string.
+// If date is empty or whitespace-only, it returns today's date in YYYY-MM-DD format.
+// Returns an error if date is a datetime string (contains a space or 'T' character).
+func NewDate(date, format string) (Nakamura, error) {
 	if len(strings.TrimSpace(date)) == 0 {
-		return Nakamura{Today(), "YYYY-MM-DD"}
+		return Nakamura{Today(), "YYYY-MM-DD"}, nil
 	}
-	return Nakamura{strings.Split(date, " ")[0], format}
+	if strings.ContainsAny(date, " T") {
+		return Nakamura{}, fmt.Errorf("nakamura: NewDate does not accept datetime strings, got %q", date)
+	}
+	return Nakamura{date, format}, nil
 }
 
 // IsDateValid checks for the validity of a nakamura date object
@@ -67,12 +73,14 @@ func (firstDate Nakamura) Between(secondDate, thirdDate Nakamura) bool {
 
 // Check if a nakamura object is in the future
 func (date Nakamura) IsFuture() bool {
-	return date.GreaterThan(NewDate("", date.format))
+	today, _ := NewDate("", date.format)
+	return date.GreaterThan(today)
 }
 
 // Check if a nakamura object is in the past
 func (date Nakamura) IsPast() bool {
-	return date.LessThan(NewDate("", date.format))
+	today, _ := NewDate("", date.format)
+	return date.LessThan(today)
 }
 
 // Add adds a given value to either year/month/day
