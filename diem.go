@@ -229,7 +229,7 @@ func Weekday(input, format string) string {
 	return time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.Local).Weekday().String()
 }
 
-func Month(input, format string) string {
+func monthName(input, format string) string {
 	date, dateFormat := getDateType(input, format)
 	_, month, _ := returnYearMonthDay(date, dateFormat)
 	return getMonth(month)
