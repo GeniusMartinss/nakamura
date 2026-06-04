@@ -1,6 +1,9 @@
 package nakamura
 
-import "testing"
+import (
+	"strings"
+	"testing"
+)
 
 func TestNakamura_IsDateValid(t *testing.T) {
 	cases := []struct {
@@ -352,5 +355,87 @@ func TestMin(t *testing.T) {
 		if got != c.want {
 			t.Errorf("Min(%v) == %v, want %v", c.args, got, c.want)
 		}
+	}
+}
+
+// TestNewDate exercises all three behavioural rules of the updated NewDate:
+//   1. empty / whitespace-only input → returns today's date with nil error
+//   2. datetime string (contains space or 'T') → returns Nakamura{} and a descriptive error
+//   3. pure date string → returns Nakamura{date, format} with nil error
+func TestNewDate(t *testing.T) {
+	// ── rule 1: empty / whitespace input → today, nil error ──────────────────
+	t.Run("empty string returns today with nil error", func(t *testing.T) {
+		got, err := NewDate("", "YYYY-MM-DD")
+		if err != nil {
+			t.Fatalf("NewDate(\"\", ...) unexpected error: %v", err)
+		}
+		today := Today()
+		if got.date != today {
+			t.Errorf("NewDate(\"\", ...) date = %q, want today %q", got.date, today)
+		}
+		if got.format != "YYYY-MM-DD" {
+			t.Errorf("NewDate(\"\", ...) format = %q, want %q", got.format, "YYYY-MM-DD")
+		}
+	})
+
+	t.Run("whitespace-only string returns today with nil error", func(t *testing.T) {
+		got, err := NewDate("   ", "YYYY-MM-DD")
+		if err != nil {
+			t.Fatalf("NewDate(\"   \", ...) unexpected error: %v", err)
+		}
+		today := Today()
+		if got.date != today {
+			t.Errorf("NewDate(\"   \", ...) date = %q, want today %q", got.date, today)
+		}
+	})
+
+	// ── rule 2: datetime strings are rejected ─────────────────────────────────
+	datetimeCases := []struct {
+		name  string
+		input string
+	}{
+		{"datetime with space separator", "2024-01-15 10:30:00"},
+		{"ISO 8601 datetime with T separator", "2024-01-15T10:30:00"},
+		{"date with time zone offset via T", "2024-01-15T00:00:00Z"},
+	}
+	for _, tc := range datetimeCases {
+		tc := tc // capture range variable
+		t.Run(tc.name, func(t *testing.T) {
+			got, err := NewDate(tc.input, "YYYY-MM-DD")
+			if err == nil {
+				t.Errorf("NewDate(%q) expected an error, got nil (result: %+v)", tc.input, got)
+			}
+			if (got != Nakamura{}) {
+				t.Errorf("NewDate(%q) expected empty Nakamura{}, got %+v", tc.input, got)
+			}
+			if !strings.Contains(err.Error(), tc.input) {
+				t.Errorf("NewDate(%q) error message %q should contain the offending input", tc.input, err.Error())
+			}
+		})
+	}
+
+	// ── rule 3: pure date string → Nakamura{date, format} with nil error ──────
+	pureDateCases := []struct {
+		date   string
+		format string
+	}{
+		{"2024-01-15", "YYYY-MM-DD"},
+		{"2024/06/30", "YYYY/MM/DD"},
+		{"1999-12-31", "YYYY-MM-DD"},
+	}
+	for _, tc := range pureDateCases {
+		tc := tc
+		t.Run("pure date "+tc.date, func(t *testing.T) {
+			got, err := NewDate(tc.date, tc.format)
+			if err != nil {
+				t.Fatalf("NewDate(%q, %q) unexpected error: %v", tc.date, tc.format, err)
+			}
+			if got.date != tc.date {
+				t.Errorf("NewDate(%q, %q) .date = %q, want %q", tc.date, tc.format, got.date, tc.date)
+			}
+			if got.format != tc.format {
+				t.Errorf("NewDate(%q, %q) .format = %q, want %q", tc.date, tc.format, got.format, tc.format)
+			}
+		})
 	}
 }
