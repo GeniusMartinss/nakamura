@@ -2,6 +2,7 @@ package nakamura
 
 import (
 	"errors"
+	"fmt"
 	"reflect"
 	"strconv"
 	"strings"
@@ -200,19 +201,21 @@ func LessThan(firstDate, secondDate Nakamura, format string) bool {
 	return !GreaterThan(firstDate, secondDate, format) && !Equal(firstDate, secondDate, format)
 }
 
-func Add(input Nakamura, value int, format string) Nakamura {
+// Add adds value to the given unit component (Year, Month, or Day) of input.
+// Add returns an error for an unrecognised Unit value.
+func Add(input Nakamura, value int, unit Unit) (Nakamura, error) {
 	date, dateFormat := getDateType(input.date, "YYYY-MM-DD")
 	year, month, day := returnYearMonthDay(date, dateFormat)
 	inputDate := time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.Local)
-	switch format {
-	case "YYYY":
-		return Nakamura{strings.Split(inputDate.AddDate(value, 0, 0).String(), " ")[0], input.format}
-	case "MM":
-		return Nakamura{strings.Split(inputDate.AddDate(0, value, 0).String(), " ")[0], input.format}
-	case "DD":
-		return Nakamura{strings.Split(inputDate.AddDate(0, 0, value).String(), " ")[0], input.format}
+	switch unit {
+	case Year:
+		return Nakamura{strings.Split(inputDate.AddDate(value, 0, 0).String(), " ")[0], input.format}, nil
+	case Month:
+		return Nakamura{strings.Split(inputDate.AddDate(0, value, 0).String(), " ")[0], input.format}, nil
+	case Day:
+		return Nakamura{strings.Split(inputDate.AddDate(0, 0, value).String(), " ")[0], input.format}, nil
 	}
-	return Nakamura{}
+	return Nakamura{}, fmt.Errorf("nakamura: unknown unit %d", unit)
 }
 
 func Equal(firstDate, secondDate Nakamura, format string) bool {
@@ -262,36 +265,4 @@ func getDaysInMonth(year, month int) (int, error) {
 	}
 
 	return 0, errors.New("Invalid month")
-}
-
-// Max returns the latest of the dates passed as arguments
-func GetMax(dates ...Nakamura) Nakamura {
-	if len(dates) > 0 {
-		maxDate := dates[0]
-		for i := 1; i < len(dates); i++ {
-			if GreaterThan(dates[i], maxDate, maxDate.format) {
-				maxDate = dates[i]
-			}
-		}
-
-		return maxDate
-	}
-
-	return Nakamura{Today(), "YYYY-MM-DD"}
-}
-
-// Min returns the earliest of the dates passed as arguments
-func GetMin(dates ...Nakamura) Nakamura {
-	if len(dates) > 0 {
-		minDate := dates[0]
-		for i := 1; i < len(dates); i++ {
-			if LessThan(dates[i], minDate, minDate.format) {
-				minDate = dates[i]
-			}
-		}
-
-		return minDate
-	}
-
-	return Nakamura{Today(), "YYYY-MM-DD"}
 }

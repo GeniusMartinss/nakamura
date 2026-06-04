@@ -95,14 +95,16 @@ func (date Nakamura) IsPast() bool {
 	return date.LessThan(today)
 }
 
-// Add adds a given value to either year/month/day
-func (date Nakamura) Add(value int, format string) Nakamura {
-	return Add(date, value, format)
+// Add adds a given value to the specified Unit component (Year, Month, or Day) of the date.
+// Add returns an error for an unrecognised Unit value.
+func (date Nakamura) Add(value int, unit Unit) (Nakamura, error) {
+	return Add(date, value, unit)
 }
 
-// Subtract subtracts a given value from year/month/day
-func (date Nakamura) Subtract(value int, format string) Nakamura {
-	return Add(date, -value, format)
+// Subtract subtracts a given value from the specified Unit component (Year, Month, or Day) of the date.
+// Subtract returns an error for an unrecognised Unit value.
+func (date Nakamura) Subtract(value int, unit Unit) (Nakamura, error) {
+	return Add(date, -value, unit)
 }
 
 // Equal checks if a given pair of date objects are equal
@@ -124,10 +126,32 @@ func (date Nakamura) MonthDays() (int, error) {
 	return DaysInMonth(date.date, date.format)
 }
 
+// Max returns the latest (maximum) date from the provided dates.
+// If no dates are provided, it returns today's date in YYYY-MM-DD format.
 func Max(dates ...Nakamura) Nakamura {
-	return GetMax(dates...)
+	if len(dates) > 0 {
+		result := dates[0]
+		for i := 1; i < len(dates); i++ {
+			if GreaterThan(dates[i], result, result.format) {
+				result = dates[i]
+			}
+		}
+		return result
+	}
+	return Nakamura{Today(), "YYYY-MM-DD"}
 }
 
+// Min returns the earliest (minimum) date from the provided dates.
+// If no dates are provided, it returns today's date in YYYY-MM-DD format.
 func Min(dates ...Nakamura) Nakamura {
-	return GetMin(dates...)
+	if len(dates) > 0 {
+		result := dates[0]
+		for i := 1; i < len(dates); i++ {
+			if LessThan(dates[i], result, result.format) {
+				result = dates[i]
+			}
+		}
+		return result
+	}
+	return Nakamura{Today(), "YYYY-MM-DD"}
 }
