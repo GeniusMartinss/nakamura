@@ -40,7 +40,7 @@ func IsDateValid(input, format string) bool {
 	return true
 }
 
-//the split version of both
+// the split version of both
 func dateMatchesFormat(input, format []string) bool {
 	var globalMonth int
 	var globalYear int
