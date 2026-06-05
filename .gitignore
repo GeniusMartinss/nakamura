@@ -12,3 +12,18 @@
 
 # Project-local glide cache, RE: https://github.com/Masterminds/glide/issues/736
 .glide/
+
+# Local Go toolchain directory (extracted by mise / manual install)
+go/
+
+# Go toolchain tarballs / zips
+go*.linux-amd64.tar.gz
+go*.darwin-amd64.tar.gz
+go*.windows-amd64.zip
+
+# Local tool configs
+hk.local.pkl
+mise.local.toml
+
+# Nested working-tree copies
+repo/
