@@ -80,7 +80,7 @@ func isDayValidInMonth(year, month, day int) bool {
 func Normalise(input, format string) string {
 	date, dateFormat := getDateType(input, format)
 	year, month, day := returnYearMonthDay(date, dateFormat)
-	return strings.Split(time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.Local).String(), " ")[0]
+	return strings.Split(time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.UTC).String(), " ")[0]
 
 }
 
@@ -105,7 +105,7 @@ func returnYearMonthDay(input, format []string) (year, month, day int) {
 func Humanise(input, format string) string {
 	date, dateFormat := getDateType(input, format)
 	year, month, day := returnYearMonthDay(date, dateFormat)
-	return time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.Local).Weekday().String() + "," + strconv.Itoa(day) + " " + getMonth(month).String() + " " + strconv.Itoa(year)
+	return time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.UTC).Weekday().String() + "," + strconv.Itoa(day) + " " + getMonth(month).String() + " " + strconv.Itoa(year)
 }
 
 func getDateType(input, format string) (date, dateFormat []string) {
@@ -165,7 +165,7 @@ func IsWeekend(input, format string) bool {
 	date, dateFormat := getDateType(input, format)
 	year, month, day := returnYearMonthDay(date, dateFormat)
 
-	if weekday := time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.Local).Weekday().String(); weekday == "Sunday" || weekday == "Saturday" {
+	if weekday := time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.UTC).Weekday().String(); weekday == "Sunday" || weekday == "Saturday" {
 		return true
 	}
 	return false
@@ -186,7 +186,7 @@ func GreaterThan(firstDate, secondDate Nakamura, format string) bool {
 	year1, month1, day1 := returnYearMonthDay(date1, dateFormat1)
 	date2, dateFormat2 := getDateType(secondDate.date, format)
 	year2, month2, day2 := returnYearMonthDay(date2, dateFormat2)
-	return time.Date(year1, time.Month(month1), day1, 0, 0, 0, 0, time.Local).After(time.Date(year2, time.Month(month2), day2, 0, 0, 0, 0, time.Local))
+	return time.Date(year1, time.Month(month1), day1, 0, 0, 0, 0, time.UTC).After(time.Date(year2, time.Month(month2), day2, 0, 0, 0, 0, time.UTC))
 }
 
 func LessThan(firstDate, secondDate Nakamura, format string) bool {
@@ -198,7 +198,7 @@ func LessThan(firstDate, secondDate Nakamura, format string) bool {
 func Add(input Nakamura, value int, unit Unit) (Nakamura, error) {
 	date, dateFormat := getDateType(input.date, "YYYY-MM-DD")
 	year, month, day := returnYearMonthDay(date, dateFormat)
-	inputDate := time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.Local)
+	inputDate := time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.UTC)
 	switch unit {
 	case Year:
 		return Nakamura{strings.Split(inputDate.AddDate(value, 0, 0).String(), " ")[0], input.format}, nil
@@ -215,13 +215,13 @@ func Equal(firstDate, secondDate Nakamura, format string) bool {
 	year1, month1, day1 := returnYearMonthDay(date1, dateFormat1)
 	date2, dateFormat2 := getDateType(secondDate.date, format)
 	year2, month2, day2 := returnYearMonthDay(date2, dateFormat2)
-	return time.Date(year1, time.Month(month1), day1, 0, 0, 0, 0, time.Local).Equal(time.Date(year2, time.Month(month2), day2, 0, 0, 0, 0, time.Local))
+	return time.Date(year1, time.Month(month1), day1, 0, 0, 0, 0, time.UTC).Equal(time.Date(year2, time.Month(month2), day2, 0, 0, 0, 0, time.UTC))
 }
 
 func Weekday(input, format string) string {
 	date, dateFormat := getDateType(input, format)
 	year, month, day := returnYearMonthDay(date, dateFormat)
-	return time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.Local).Weekday().String()
+	return time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.UTC).Weekday().String()
 }
 
 func monthName(input, format string) string {
