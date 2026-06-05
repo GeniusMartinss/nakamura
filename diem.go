@@ -3,26 +3,14 @@ package nakamura
 import (
 	"errors"
 	"fmt"
-	"reflect"
 	"strconv"
 	"strings"
 	"time"
 )
 
-type Months struct {
-	January,
-	February,
-	March,
-	April,
-	May,
-	June,
-	July,
-	August,
-	September,
-	October,
-	November,
-	December int
-}
+// daysInMonth contains the number of days in each month for a non-leap year.
+// Index 0 is unused; months 1–12 map directly to daysInMonth[month].
+var daysInMonth = [13]int{0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}
 
 func IsDateValid(input, format string) bool {
 	if len(input) == 0 {
@@ -79,30 +67,14 @@ func dateMatchesFormat(input, format []string) bool {
 }
 
 func isDayValidInMonth(year, month, day int) bool {
-	validityCheck := Months{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}
-	validityCount := Months{}
-	if isLeapYear(year) {
-		validityCount = Months{31, 29, 31, 30, 31, 30, 31, 30, 31, 31, 30, 31}
-	} else {
-		validityCount = Months{31, 28, 31, 30, 31, 30, 31, 30, 31, 31, 30, 31}
-
+	if month < 1 || month > 12 {
+		return false
 	}
-	monthVal := reflect.ValueOf(validityCheck)
-	daysVal := reflect.ValueOf(validityCount)
-
-	//Get Month check if day passed in is valid in the given month
-	for i := 0; i < monthVal.NumField(); i++ {
-		if month == monthVal.Field(i).Interface().(int) {
-			maxDaysInMonth := daysVal.Field(i).Interface().(int)
-			if day <= maxDaysInMonth && day > 0 {
-				return true
-			} else {
-				return false
-			}
-		}
+	days := daysInMonth[month]
+	if month == 2 && isLeapYear(year) {
+		days = 29
 	}
-
-	return false
+	return day >= 1 && day <= days
 }
 
 func Normalise(input, format string) string {
@@ -133,7 +105,7 @@ func returnYearMonthDay(input, format []string) (year, month, day int) {
 func Humanise(input, format string) string {
 	date, dateFormat := getDateType(input, format)
 	year, month, day := returnYearMonthDay(date, dateFormat)
-	return time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.Local).Weekday().String() + "," + strconv.Itoa(day) + " " + getMonth(month) + " " + strconv.Itoa(year)
+	return time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.Local).Weekday().String() + "," + strconv.Itoa(day) + " " + getMonth(month).String() + " " + strconv.Itoa(year)
 }
 
 func getDateType(input, format string) (date, dateFormat []string) {
@@ -154,15 +126,35 @@ func getDateType(input, format string) (date, dateFormat []string) {
 
 }
 
-func getMonth(month int) string {
-	validityCheck := Months{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}
-	monthVal := reflect.ValueOf(validityCheck)
-	for i := 0; i < monthVal.NumField(); i++ {
-		if month == monthVal.Field(i).Interface().(int) {
-			return monthVal.Type().Field(i).Name
-		}
+func getMonth(month int) time.Month {
+	switch month {
+	case 1:
+		return time.January
+	case 2:
+		return time.February
+	case 3:
+		return time.March
+	case 4:
+		return time.April
+	case 5:
+		return time.May
+	case 6:
+		return time.June
+	case 7:
+		return time.July
+	case 8:
+		return time.August
+	case 9:
+		return time.September
+	case 10:
+		return time.October
+	case 11:
+		return time.November
+	case 12:
+		return time.December
+	default:
+		return time.January
 	}
-	return ""
 }
 
 func Today() string {
@@ -235,7 +227,7 @@ func Weekday(input, format string) string {
 func monthName(input, format string) string {
 	date, dateFormat := getDateType(input, format)
 	_, month, _ := returnYearMonthDay(date, dateFormat)
-	return getMonth(month)
+	return getMonth(month).String()
 }
 
 // DaysInMonth returns the number of days in a month
