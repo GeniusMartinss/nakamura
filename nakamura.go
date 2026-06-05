@@ -47,10 +47,15 @@ func (date Nakamura) IsDateValid() bool {
 	return IsDateValid(date.date, date.format)
 }
 
-// Normalise corrects any errors in the date object, such as
-// overflowing days or months by normalising
-func (date Nakamura) Normalise() Nakamura {
-	return Nakamura{Normalise(date.date, date.format), date.format}
+// Normalise validates the date and, if valid, returns a new Nakamura holding
+// its canonical YYYY-MM-DD representation. It returns an error if the date is
+// invalid (e.g. month 13, day 32, or February 30).
+func (date Nakamura) Normalise() (Nakamura, error) {
+	result, err := Normalise(date.date, date.format)
+	if err != nil {
+		return Nakamura{}, err
+	}
+	return Nakamura{result, date.format}, nil
 }
 
 // Humanise converts a nakamura date object into readable format

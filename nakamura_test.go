@@ -230,19 +230,52 @@ func TestNakamura_Month(t *testing.T) {
 	}
 }
 
+// TestNakamura_Normalise verifies the (Nakamura, error) contract introduced
+// when Normalise was updated to validate dates instead of silently overflowing.
 func TestNakamura_Normalise(t *testing.T) {
-	cases := []struct {
+	// ── invalid dates must return an error and an empty Nakamura{} ────────────
+	invalidCases := []struct {
+		name  string
+		input Nakamura
+	}{
+		{"month 13", Nakamura{"2018-13-09", "YYYY-MM-DD"}},
+		{"day 32", Nakamura{"2018-03-32", "YYYY-MM-DD"}},
+		{"February 30", Nakamura{"2018-02-30", "YYYY-MM-DD"}},
+	}
+	for _, c := range invalidCases {
+		c := c // capture range variable
+		t.Run(c.name, func(t *testing.T) {
+			got, err := c.input.Normalise()
+			if err == nil {
+				t.Errorf("Normalise(%q) expected an error for invalid date, got nil (result: %+v)", c.input.date, got)
+			}
+			if (got != Nakamura{}) {
+				t.Errorf("Normalise(%q) expected empty Nakamura{} on error, got %+v", c.input.date, got)
+			}
+		})
+	}
+
+	// ── valid dates must normalise to their canonical YYYY-MM-DD string ───────
+	validCases := []struct {
 		input Nakamura
 		want  Nakamura
 	}{
-		{Nakamura{"2018-13-09", "YYYY-MM-DD"}, Nakamura{"2019-01-09", "YYYY-MM-DD"}},
-		{Nakamura{"2018-03-32", "YYYY-MM-DD"}, Nakamura{"2018-04-01", "YYYY-MM-DD"}},
+		{Nakamura{"2018-03-09", "YYYY-MM-DD"}, Nakamura{"2018-03-09", "YYYY-MM-DD"}},
+		{Nakamura{"2020-02-29", "YYYY-MM-DD"}, Nakamura{"2020-02-29", "YYYY-MM-DD"}}, // leap day
+		{Nakamura{"2018-12-31", "YYYY-MM-DD"}, Nakamura{"2018-12-31", "YYYY-MM-DD"}},
 	}
-	for _, c := range cases {
-		got := c.input.Normalise()
-		if got != c.want {
-			t.Errorf("Normalise(%q) == %q, want %q", c.input.date, got, c.want)
-		}
+	for _, c := range validCases {
+		c := c
+		t.Run("valid "+c.input.date, func(t *testing.T) {
+			got, err := c.input.Normalise()
+			if err != nil {
+				t.Errorf("Normalise(%q) unexpected error: %v", c.input.date, err)
+				return
+			}
+			if got != c.want {
+				t.Errorf("Normalise(%q) == %+v, want %+v", c.input.date, got, c.want)
+			}
+		})
 	}
 }
 

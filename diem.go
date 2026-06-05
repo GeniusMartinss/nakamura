@@ -77,11 +77,18 @@ func isDayValidInMonth(year, month, day int) bool {
 	return day >= 1 && day <= days
 }
 
-func Normalise(input, format string) string {
+// Normalise validates the input date and, if valid, returns its canonical
+// YYYY-MM-DD string representation. It returns an error if the date is invalid
+// (e.g. month 13, day 32, or February 30).
+func Normalise(input, format string) (string, error) {
 	date, dateFormat := getDateType(input, format)
 	year, month, day := returnYearMonthDay(date, dateFormat)
-	return strings.Split(time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.UTC).String(), " ")[0]
-
+	if !isDayValidInMonth(year, month, day) {
+		return "", fmt.Errorf("nakamura: invalid date %q", input)
+	}
+	return strings.Split(
+		time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.UTC).String(),
+		" ")[0], nil
 }
 
 func returnYearMonthDay(input, format []string) (year, month, day int) {
